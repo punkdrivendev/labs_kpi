@@ -20,22 +20,26 @@ def draw_figure(x,y, fill_bool, peak_bool):
     plt.show(block = False)
 
 
-def rotate_2d(summits_cords, degrees):
-    #which_way is a boolean if true it spins the object right, if not left
-    try:
-        isinstance(degrees,int)
-    except ValueError:
-        print("The value is not a whole number, exiting")
-    for x in range(sizeof(summits_cords)):
-        for y in range(sizeof(summits_cords)):
-             summits_cords_rotated[x,:] = (summits_cords[x,:]*np.cos(degrees) - summits_cords[:,y]*np.sin(degrees))
-             summits_cords_rotated[:,y] = (summits_cords[x,:]*np.sin(degrees) - summits_cords[:,y]*np.cos(degrees))
+def rotate_2d(x_cords, y_cords, degrees):
+    if not isinstance(degrees, int):
+        raise TypeError("degrees must be an integer")
 
-    
+    angle = np.radians(degrees)
 
+    x_rotated = []
+    y_rotated = []
 
-    print("bombo")
+    for i in range(len(x_cords)):
+        x = x_cords[i]
+        y = y_cords[i]
 
+        new_x = x * np.cos(angle) - y * np.sin(angle)
+        new_y = x * np.sin(angle) + y * np.cos(angle)
+
+        x_rotated.append(new_x)
+        y_rotated.append(new_y)
+
+    return x_rotated, y_rotated
 
 
 x = [1,4,1]
