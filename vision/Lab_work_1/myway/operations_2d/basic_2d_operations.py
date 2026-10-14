@@ -1,47 +1,85 @@
 import numpy as np
-import math as mt
 import matplotlib.pyplot as plt
-import sys
 
-def draw_figure(x,y, fill_bool, peak_bool):
-    if not isinstance(x,list) or not isinstance(y,list):
-        raise TypeError("X and Y must be a list of coordinates")
-    if not type(fill_bool) == bool or not type(peak_bool) == bool:
-        raise TypeError("fill_bool and peak_bool parametrs must be a boolean value")
 
-    fig, ax = plt.subplots();
-    figure = ax.plot(x,y)
+def check_points(points):
+    if not isinstance(points, np.ndarray):
+        raise TypeError("Points must be a numpy array")
+
+    if points.shape != (3, 3):
+        raise ValueError("Points must be a 3 by 3 matrix")
+
+
+def draw_figure(points, fill_bool, peak_bool):
+    # points =
+    # [
+    #   [x1, x2, x3],
+    #   [y1, y2, y3],
+    #   [1,  1,  1]
+    # ]
+
+    check_points(points)
+
+    if not isinstance(fill_bool, bool) or not isinstance(peak_bool, bool):
+        raise TypeError(
+            "fill_bool and peak_bool parameters must be boolean values"
+        )
+
+    x_cords = points[0]
+    y_cords = points[1]
+
+    x_plot = np.append(x_cords, x_cords[0])
+    y_plot = np.append(y_cords, y_cords[0])
+
+    fig, ax = plt.subplots()
+
+    line, = ax.plot(x_plot, y_plot)
+
     if fill_bool:
-        ax.fill(x,y)
+        ax.fill(x_cords, y_cords)
+
     if peak_bool:
-        ax.scatter(x,y)
+        ax.scatter(x_cords, y_cords)
+
     ax.grid()
+    ax.set_aspect("equal")
 
-    plt.show(block = False)
+    plt.show(block=False)
+
+    return fig, ax, line
 
 
-def rotate_2d(x_cords, y_cords, degrees):
-    if not isinstance(degrees, int):
-        raise TypeError("degrees must be an integer")
+def rotate_2d(points, degrees):
+    check_points(points)
+
+    if not isinstance(degrees, (int, float)):
+        raise TypeError("degrees must be a number")
 
     angle = np.radians(degrees)
 
-    x_rotated = []
-    y_rotated = []
+    rotation_matrix = np.array([
+        [np.cos(angle), -np.sin(angle), 0],
+        [np.sin(angle),  np.cos(angle), 0],
+        [0,              0,             1]
+    ])
 
-    for i in range(len(x_cords)):
-        x = x_cords[i]
-        y = y_cords[i]
+    points_rotated = rotation_matrix @ points
 
-        new_x = x * np.cos(angle) - y * np.sin(angle)
-        new_y = x * np.sin(angle) + y * np.cos(angle)
-
-        x_rotated.append(new_x)
-        y_rotated.append(new_y)
-
-    return x_rotated, y_rotated
+    return points_rotated
 
 
-x = [1,4,1]
-y = [1,1,3]
-draw_figure(x,y,True,True)
+def scale_figure(points, scale):
+    check_points(points)
+
+    if not isinstance(scale, (int, float)):
+        raise TypeError("Scale must be a number")
+
+    scale_matrix = np.array([
+        [scale, 0,     0],
+        [0,     scale, 0],
+        [0,     0,     1]
+    ])
+
+    points_scaled = scale_matrix @ points
+
+    return points_scaled
