@@ -1,3 +1,5 @@
-from UI import ui
+from UI.ui import run_ui
 
-ui.UI()
+
+if __name__ == "__main__":
+    run_ui()
